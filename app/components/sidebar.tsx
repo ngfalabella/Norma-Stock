@@ -1,11 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-// Si usas la imagen con <img> normal, no hace falta importar Image de next
-// import Image from 'next/image'; 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+// Importamos el cliente de Supabase para poder cerrar la sesión
 import { createBrowserClient } from '@supabase/ssr';
-import { useRouter } from 'next/navigation';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -13,15 +11,20 @@ export default function Sidebar() {
 
   const isActive = (path: string) => pathname === path;
 
-  // Función para salir
+  // --- FUNCIÓN DE CERRAR SESIÓN ARREGLADA ---
   const handleLogout = async () => {
+    // 1. Creamos el cliente de conexión
     const supabase = createBrowserClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
+    
+    // 2. Le decimos a Supabase que borre las cookies
     await supabase.auth.signOut();
+    
+    // 3. Redirigimos al login y refrescamos la página
     router.push('/login');
-    router.refresh();
+    router.refresh(); 
   };
 
   const linkStyle = (path: string) => ({
@@ -57,7 +60,6 @@ export default function Sidebar() {
       
       {/* 1. MARCA / LOGO */}
       <div style={{ marginBottom: '40px', paddingLeft: '10px' }}>
-         {/* Contenedor del logo */}
         <div style={{
           width: '80px',
           height: '80px',
@@ -69,11 +71,16 @@ export default function Sidebar() {
           position: 'relative',
           backgroundColor: '#fff' 
         }}>
-          {/* Si tienes el logo.png en public, descomenta esto: */}
-          {/* <img src="/logo.png" alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> */}
-          
-          {/* Placeholder mientras no haya logo */}
-          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', background: '#333' }}>🍰</div>
+          {/* Logo de Norma Cakes */}
+          <img 
+            src="/image.png" 
+            alt="Norma Cakes Logo" 
+            style={{ 
+              width: '100%', 
+              height: '100%', 
+              objectFit: 'cover' 
+            }} 
+          />
         </div>
 
         <h1 style={{ 
@@ -82,7 +89,7 @@ export default function Sidebar() {
           fontFamily: 'var(--font-poppins)',
           color: 'var(--text-main)' 
         }}>
-          Pastelería
+          Norma Cakes
         </h1>
         <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
           Panel de Control
@@ -95,8 +102,8 @@ export default function Sidebar() {
           Menu Principal
         </p>
         <Link href="/" style={linkStyle('/')}><span>📊</span> Resumen</Link>
-        <Link href="/products" style={linkStyle('/products')}><span>📦</span> Mis Insumos</Link>
-        <Link href="/movements" style={linkStyle('/movements')}><span>📖</span> Libro Diario</Link>
+        <Link href="/products" style={linkStyle('/products')}><span>📦</span> Stock Actual</Link>
+        <Link href="/movements" style={linkStyle('/movements')}><span>📖</span> Ultimos Movimientos</Link>
 
         <div style={{ height: '20px' }}></div>
 
@@ -108,11 +115,11 @@ export default function Sidebar() {
           border: '1px solid var(--border-subtle)',
           backgroundColor: isActive('/movements/new') ? 'var(--primary)' : 'rgba(255,255,255,0.03)',
         }}>
-          <span>✍️</span> Anotar / Mover
+          <span>✍️</span> Nuevo Movimiento
         </Link>
       </nav>
 
-      {/* 3. FOOTER: BOTÓN DE CERRAR SESIÓN (Ya no backup) */}
+      {/* 3. FOOTER: BOTÓN DE CERRAR SESIÓN */}
       <div style={{ paddingTop: '20px', borderTop: '1px solid var(--border-subtle)' }}>
          <button 
            onClick={handleLogout}
@@ -120,7 +127,7 @@ export default function Sidebar() {
              width: '100%',
              padding: '12px',
              background: 'transparent', 
-             border: '1px solid #ef4444', 
+             border: '1px solid #ef4444',
              color: '#ef4444',
              borderRadius: '12px',
              cursor: 'pointer',
@@ -133,7 +140,6 @@ export default function Sidebar() {
              gap: '8px',
              transition: 'all 0.2s ease',
            }}
-           className="hover:bg-red-900/20" // Si usaras tailwind, si no, usa style hover
            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)'}
            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
          >

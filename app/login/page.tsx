@@ -55,8 +55,8 @@ export default function LoginPage() {
         boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
       }}>
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-          <div style={{ fontSize: '3rem', marginBottom: '10px' }}>🍰</div>
-          <h1 style={{ fontFamily: 'var(--font-poppins)', fontSize: '1.5rem', margin: 0 }}>Pastelería Control</h1>
+          <img src="./image.png" className='w-[100px] h-[100px] rounded-full' />
+          <h1 style={{ fontFamily: 'var(--font-poppins)', fontSize: '1.5rem', margin: 0 }}>Norma Cakes</h1>
           <p style={{ color: '#9CA3AF', fontSize: '0.9rem' }}>Ingreso exclusivo</p>
         </div>
 
