@@ -56,8 +56,7 @@ export default function LoginPage() {
       }}>
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
           <img src="./image.png" className='w-[100px] h-[100px] rounded-full' />
-          <h1 style={{ fontFamily: 'var(--font-poppins)', fontSize: '1.5rem', margin: 0 }}>Norma Cakes</h1>
-          <p style={{ color: '#9CA3AF', fontSize: '0.9rem' }}>Ingreso exclusivo</p>
+          <h1 style={{ fontFamily: 'var(--font-poppins)', fontSize: '1.5rem', margin: 0 }}>Norma Cakes</h1>       
         </div>
 
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
