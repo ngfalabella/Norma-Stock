@@ -54,7 +54,7 @@ export async function POST(req: Request) {
     // 3. Validación de Salida
     else if (type === 'out') {
       if (qty > currentStock) {
-        return NextResponse.json({ error: `Stock insuficiente. Hay ${currentStock}.` }, { status: 400 });
+        return NextResponse.json({ error: `No tenes tanto Stock salame. Fijate bien que Hay ${currentStock}.` }, { status: 400 });
       }
     }
 

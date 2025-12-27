@@ -22,7 +22,7 @@ export default function NewProduct() {
       router.push('/products'); // Volver al listado
       router.refresh();
     } else {
-      alert('Error al crear. ¿Tal vez el nombre ya existe?');
+      alert('Error al crear, Ya lo creaste y ya existe salame');
       setIsSubmitting(false);
     }
   };
@@ -41,7 +41,7 @@ export default function NewProduct() {
           <label style={{ display: 'block', marginBottom: '5px' }}>Nombre del insumo</label>
           <input 
             type="text" 
-            placeholder="Ej: Azúcar Impalpable, Huevos, Leche" 
+            placeholder="Ej: Harina,Azucar o lo que quiera agregar " 
             required 
             autoFocus
             value={form.name}

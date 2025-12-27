@@ -14,7 +14,7 @@ export default function NewMovement() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.product_id) return alert('Por favor elegí un insumo de la lista.');
+    if (!form.product_id) return alert('Elegí un insumo de la lista.');
     
     try {
       const res = await fetch('/api/movements', {
