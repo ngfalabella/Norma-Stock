@@ -32,7 +32,7 @@ export default function NewProduct() {
       <div style={{ marginBottom: '20px', borderBottom: '1px solid var(--border)', paddingBottom: '10px' }}>
         <h2>📝 Definir Nuevo Insumo</h2>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-          Aquí solo registras los datos del producto. Su stock inicial será <strong>0 {form.unit}</strong> hasta que registres una compra.
+          Aca solo registras los datos del producto. Su stock inicial va a ser de  <strong>0 {form.unit}</strong> hasta que registres una compra.
         </p>
       </div>
 
@@ -41,7 +41,7 @@ export default function NewProduct() {
           <label style={{ display: 'block', marginBottom: '5px' }}>Nombre del insumo</label>
           <input 
             type="text" 
-            placeholder="Ej: Harina,Azucar o lo que quiera agregar " 
+            placeholder="Ej: Harina,Azucar o lo que quieras agregar " 
             required 
             autoFocus
             value={form.name}
@@ -75,7 +75,7 @@ export default function NewProduct() {
               onChange={e => setForm({...form, min_threshold: e.target.value})}
             />
             <small style={{ color: 'var(--text-secondary)', fontSize: '0.75rem' }}>
-              Te avisaremos cuando haya menos de esta cantidad.
+              Para que te notifique como faltante o a punto de agotar stock.
             </small>
           </div>
         </div>

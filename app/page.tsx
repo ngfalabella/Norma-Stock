@@ -181,7 +181,7 @@ export default function Dashboard() {
 
                     {/* Mensaje de estado */}
                     <div style={{ fontSize: '0.75rem', marginTop: '6px', color: 'rgba(255,255,255,0.4)' }}>
-                      {isCritical ? '🛑 Agotado - Reponer urgente' : '📉 Stock bajo'}
+                      {isCritical ? '🛑 Agotado - Reponer ' : '📉 Stock bajo'}
                     </div>
                   </div>
                 );
