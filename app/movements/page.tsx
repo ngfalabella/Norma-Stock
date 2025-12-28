@@ -42,14 +42,14 @@ export default function MovementsHistory() {
     }
   };
 
-  if (loading) return <p style={{ padding: '20px' }}>Abriendo el libro diario...</p>;
+  if (loading) return <p style={{ padding: '20px' }}>Abriendo el registro...</p>;
 
   return (
     <div>
       <div style={{ marginBottom: '20px' }}>
         <h2>📖 Libro Diario de Movimientos</h2>
         <p style={{ color: 'var(--text-secondary)' }}>
-          Aquí queda registrado todo lo que entra y sale de la cocina.
+          Aca queda registrado todo lo que entra y sale de la cocina.
         </p>
       </div>
 

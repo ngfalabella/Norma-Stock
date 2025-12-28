@@ -55,7 +55,7 @@ export default function LoginPage() {
         boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
       }}>
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-          <img src="./image.png" className='w-[100px] h-[100px] rounded-full' />
+          <img src="./image.png" className='w-[100px] h-[100px] rounded-full' style={{borderRadius:'100%'}}/>
           <h1 style={{ fontFamily: 'var(--font-poppins)', fontSize: '1.5rem', margin: 0 }}>Norma Cakes</h1>       
         </div>
 
@@ -67,7 +67,7 @@ export default function LoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="micaela@pasteleria.com"
+              placeholder="normacakes@test.com"
               style={{
                 width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #333',
                 backgroundColor: '#2A2A2A', color: 'white', outline: 'none'
