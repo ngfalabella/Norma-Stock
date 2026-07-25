@@ -14,7 +14,7 @@ export default function NewMovement() {
   const [form, setForm] = useState({ product_id: '', type: 'out', quantity: '', notes: '' });
 
   useEffect(() => {
-    fetch('/api/products').then(async (response) => {
+    fetch('/api/products', { cache: 'no-store' }).then(async (response) => {
       const data = await response.json();
       if (!response.ok || !Array.isArray(data)) throw new Error(data?.error || 'No se pudieron cargar los productos.');
       setProducts(data);

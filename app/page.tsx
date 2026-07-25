@@ -15,7 +15,7 @@ export default function Dashboard() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    fetch('/api/products').then(async (response) => {
+    fetch('/api/products', { cache: 'no-store' }).then(async (response) => {
       const data = await response.json();
       if (!response.ok || !Array.isArray(data)) throw new Error(data?.error || 'La respuesta no es válida.');
       setProducts(data);

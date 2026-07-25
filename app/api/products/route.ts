@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/db/supabase';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   const { data, error } = await supabase
     .from('products')
@@ -9,7 +12,9 @@ export async function GET() {
     .order('name', { ascending: true });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json(data ?? []);
+  return NextResponse.json(data ?? [], {
+    headers: { 'Cache-Control': 'no-store, max-age=0' },
+  });
 }
 
 export async function POST(req: Request) {

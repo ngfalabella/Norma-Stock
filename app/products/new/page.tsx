@@ -22,8 +22,7 @@ export default function NewProduct() {
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'No se pudo crear el producto.');
-        router.push('/products');
-        router.refresh();
+        router.push(`/products?created=${data.product?.id ?? 'ok'}`);
       }} />
     </div>
   );

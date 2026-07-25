@@ -16,7 +16,7 @@ export default function ProductsList() {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch('/api/products');
+      const response = await fetch('/api/products', { cache: 'no-store' });
       const data = await response.json();
       if (!response.ok || !Array.isArray(data)) throw new Error(data.error || 'Respuesta inválida.');
       setProducts(data);
