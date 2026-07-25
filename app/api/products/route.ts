@@ -37,7 +37,12 @@ export async function POST(req: Request) {
       p_notes: String(body.notes ?? '').trim() || null,
     });
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    if (error) {
+      const message = error.code === '23505'
+        ? `Ya existe un producto activo llamado “${name}”. Podés editar el existente o usar otro nombre.`
+        : error.message;
+      return NextResponse.json({ error: message }, { status: 400 });
+    }
 
     return NextResponse.json({ success: true, product }, { status: 201 });
   } catch {

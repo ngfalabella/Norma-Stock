@@ -38,7 +38,12 @@ export async function PUT(req: Request, { params }: Context) {
     })
     .eq('id', id).eq('is_active', true).select().single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+  if (error) {
+    const message = error.code === '23505'
+      ? `Ya existe otro producto activo llamado “${name}”.`
+      : error.message;
+    return NextResponse.json({ error: message }, { status: 400 });
+  }
   return NextResponse.json(data);
 }
 
