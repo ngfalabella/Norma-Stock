@@ -48,6 +48,24 @@ create unique index if not exists products_name_active_unique
 create index if not exists stock_movements_product_date_idx
   on public.stock_movements (product_id, created_at desc);
 
+-- La aplicación trabaja con la sesión autenticada de Supabase.
+alter table public.products enable row level security;
+alter table public.stock_movements enable row level security;
+
+drop policy if exists "Authenticated users manage products" on public.products;
+create policy "Authenticated users manage products"
+  on public.products for all
+  to authenticated
+  using (true)
+  with check (true);
+
+drop policy if exists "Authenticated users manage movements" on public.stock_movements;
+create policy "Authenticated users manage movements"
+  on public.stock_movements for all
+  to authenticated
+  using (true)
+  with check (true);
+
 create or replace function public.record_stock_movement(
   p_product_id bigint,
   p_type text,
@@ -108,6 +126,9 @@ begin
 end;
 $$;
 
+revoke all on function public.record_stock_movement(bigint, text, numeric, text) from public, anon;
+grant execute on function public.record_stock_movement(bigint, text, numeric, text) to authenticated;
+
 create or replace function public.create_product_with_stock(
   p_name text,
   p_unit text,
@@ -142,3 +163,6 @@ begin
   return v_product;
 end;
 $$;
+
+revoke all on function public.create_product_with_stock(text, text, text, numeric, numeric, text, text) from public, anon;
+grant execute on function public.create_product_with_stock(text, text, text, numeric, numeric, text, text) to authenticated;

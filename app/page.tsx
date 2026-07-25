@@ -30,7 +30,7 @@ export default function Dashboard() {
   const healthy = products.length - alerts.length;
 
   const copyShoppingList = async () => {
-    const text = `Lista de compras - Norma Cakes\n\n${alerts.map((product) => {
+    const text = `Lista de compras - Moka Pastelería\n\n${alerts.map((product) => {
       const missing = Math.max(0, Number(product.min_threshold) - Number(product.current_stock));
       return `☐ ${product.name} — faltan aprox. ${missing.toFixed(2)} ${product.unit}`;
     }).join('\n')}`;
@@ -45,7 +45,7 @@ export default function Dashboard() {
   return (
     <>
       <header className="page-heading">
-        <div><p className="eyebrow">Panel general</p><h1>Resumen de stock</h1><p>Estado actual del inventario de Norma Cakes.</p></div>
+        <div><p className="eyebrow">Panel general</p><h1>Resumen de stock</h1><p>Estado actual del inventario de Moka Pastelería.</p></div>
         <Link href="/movements/new" className="btn">＋ Registrar movimiento</Link>
       </header>
 

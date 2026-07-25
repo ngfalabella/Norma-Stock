@@ -77,7 +77,6 @@ export default function ProductsList() {
                     <td>{product.min_threshold} {product.unit}</td>
                     <td><span className={low ? 'badge-alert' : 'badge-ok'}>{low ? 'Stock bajo' : 'Disponible'}</span></td>
                     <td><div className="row-actions">
-                      <Link className="btn-small primary" href={`/movements/new?product=${product.id}`}>Movimiento</Link>
                       <Link className="btn-small" href={`/products/${product.id}/edit`}>Editar</Link>
                       <button className="btn-small danger" onClick={() => setDeleteTarget(product)}>Eliminar</button>
                     </div></td>

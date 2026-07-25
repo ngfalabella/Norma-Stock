@@ -34,8 +34,8 @@ export default function LoginPage() {
     <div className="login-page">
       <section className="login-card" aria-labelledby="login-title">
         <div className="login-brand">
-          <Image src="/image.png" width={72} height={72} alt="" className="login-logo" priority />
-          <h1 id="login-title">Norma Cakes</h1>
+          <Image src="/moka-logo.png" width={120} height={120} alt="Moka Pastelería" className="login-logo" priority />
+          <h1 id="login-title">Moka Pastelería</h1>
           <p>Ingresá para gestionar el inventario</p>
         </div>
         {error && <div className="form-error" role="alert">{error}</div>}

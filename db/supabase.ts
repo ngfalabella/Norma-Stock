@@ -1,14 +1,28 @@
-import { createClient } from '@supabase/supabase-js';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+export async function createSupabaseServerClient() {
+  const cookieStore = await cookies();
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-// Verificación de seguridad
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error(
-    '🛑 ERROR CRÍTICO: Faltan las variables de entorno de Supabase.\n' +
-    'Asegúrate de tener el archivo .env.local en la raíz del proyecto con NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY.'
-  );
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error('Faltan las variables de conexión a Supabase.');
+  }
+
+  return createServerClient(supabaseUrl, supabaseKey, {
+    cookies: {
+      getAll: () => cookieStore.getAll(),
+      setAll: (cookiesToSet) => {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set(name, value, options)
+          );
+        } catch {
+          // El middleware se ocupa de refrescar la sesión cuando la respuesta
+          // actual no permite modificar cookies.
+        }
+      },
+    },
+  });
 }
-
-export const supabase = createClient(supabaseUrl, supabaseKey);

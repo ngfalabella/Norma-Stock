@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { createBrowserClient } from '@supabase/ssr';
+import ThemeSelector from './ThemeSelector';
 
 const navItems = [
   { href: '/', label: 'Resumen', icon: '📊' },
@@ -28,9 +29,9 @@ export default function Sidebar() {
 
   return (
     <aside className="sidebar" aria-label="Navegación principal">
-      <Link href="/" className="brand" aria-label="Norma Cakes, ir al resumen">
-        <Image src="/image.png" width={44} height={44} alt="" className="brand-logo" priority />
-        <span className="brand-copy"><strong>Norma Cakes</strong><small>Control de stock</small></span>
+      <Link href="/" className="brand" aria-label="Moka Pastelería, ir al resumen">
+        <Image src="/moka-logo.png" width={44} height={44} alt="" className="brand-logo" priority />
+        <span className="brand-copy"><strong>Moka Pastelería</strong><small>Control de stock</small></span>
       </Link>
 
       <nav className="main-nav">
@@ -50,10 +51,13 @@ export default function Sidebar() {
         </Link>
       </nav>
 
-      <button className="logout-button" onClick={logout}>
-        <span className="nav-icon" aria-hidden="true">🚪</span>
-        <span className="nav-label">Cerrar sesión</span>
-      </button>
+      <div className="sidebar-footer">
+        <ThemeSelector />
+        <button className="logout-button" onClick={logout}>
+          <span className="nav-icon" aria-hidden="true">🚪</span>
+          <span className="nav-label">Cerrar sesión</span>
+        </button>
+      </div>
     </aside>
   );
 }

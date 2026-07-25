@@ -1,4 +1,4 @@
-# Norma Stock
+# Moka Pastelería · Control de stock
 
 Control de stock para un pequeño emprendimiento de pastelería, construido con Next.js y Supabase.
 

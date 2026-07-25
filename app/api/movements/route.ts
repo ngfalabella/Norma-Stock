@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/db/supabase';
+import { createSupabaseServerClient } from '@/db/supabase';
 
 export async function GET() {
+  const supabase = await createSupabaseServerClient();
+  const { data: authData } = await supabase.auth.getUser();
+  if (!authData.user) return NextResponse.json({ error: 'Sesión no válida.' }, { status: 401 });
   const { data, error } = await supabase
     .from('stock_movements')
     .select('*, products(name, unit)')
@@ -18,6 +21,9 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    const supabase = await createSupabaseServerClient();
+    const { data: authData } = await supabase.auth.getUser();
+    if (!authData.user) return NextResponse.json({ error: 'Sesión no válida.' }, { status: 401 });
     const body = await req.json();
     const productId = Number(body.product_id);
     const quantity = Number(body.quantity);

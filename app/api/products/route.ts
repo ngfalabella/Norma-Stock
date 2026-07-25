@@ -1,10 +1,20 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/db/supabase';
+import { createSupabaseServerClient } from '@/db/supabase';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export async function GET() {
+  const supabase = await createSupabaseServerClient();
+  const { data: authData, error: authError } = await supabase.auth.getUser();
+
+  if (authError || !authData.user) {
+    return NextResponse.json(
+      { error: 'La sesión no llegó a la API. Cerrá sesión y volvé a ingresar.' },
+      { status: 401 }
+    );
+  }
+
   const { data, error } = await supabase
     .from('products')
     .select('*')
@@ -19,6 +29,15 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    const supabase = await createSupabaseServerClient();
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !authData.user) {
+      return NextResponse.json(
+        { error: 'Tu sesión venció. Volvé a ingresar antes de crear el producto.' },
+        { status: 401 }
+      );
+    }
     const body = await req.json();
     const name = String(body.name ?? '').trim();
     const unit = String(body.unit ?? '').trim();

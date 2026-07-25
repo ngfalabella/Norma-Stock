@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/db/supabase';
+import { createSupabaseServerClient } from '@/db/supabase';
 
 type Context = { params: Promise<{ id: string }> };
 
 export async function GET(_req: Request, { params }: Context) {
+  const supabase = await createSupabaseServerClient();
+  const { data: authData } = await supabase.auth.getUser();
+  if (!authData.user) return NextResponse.json({ error: 'Sesión no válida.' }, { status: 401 });
   const { id } = await params;
   const { data, error } = await supabase
     .from('products').select('*').eq('id', id).eq('is_active', true).single();
@@ -13,6 +16,9 @@ export async function GET(_req: Request, { params }: Context) {
 }
 
 export async function PUT(req: Request, { params }: Context) {
+  const supabase = await createSupabaseServerClient();
+  const { data: authData } = await supabase.auth.getUser();
+  if (!authData.user) return NextResponse.json({ error: 'Sesión no válida.' }, { status: 401 });
   const { id } = await params;
   const body = await req.json();
   const name = String(body.name ?? '').trim();
@@ -48,6 +54,9 @@ export async function PUT(req: Request, { params }: Context) {
 }
 
 export async function DELETE(_req: Request, { params }: Context) {
+  const supabase = await createSupabaseServerClient();
+  const { data: authData } = await supabase.auth.getUser();
+  if (!authData.user) return NextResponse.json({ error: 'Sesión no válida.' }, { status: 401 });
   const { id } = await params;
   const { error } = await supabase
     .from('products')

@@ -9,13 +9,24 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: 'Norma Cakes · Control de stock',
+  title: 'Moka Pastelería · Control de stock',
   description: 'Sistema de gestión de inventario',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es">
+    <html lang="es" data-theme="dark" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `
+          try {
+            var theme = localStorage.getItem('norma-stock-theme');
+            document.documentElement.dataset.theme =
+              theme === 'light' || theme === 'wine' ? theme : 'dark';
+          } catch (_) {
+            document.documentElement.dataset.theme = 'dark';
+          }
+        ` }} />
+      </head>
       <body className={inter.variable}><ClientLayout>{children}</ClientLayout></body>
     </html>
   );
