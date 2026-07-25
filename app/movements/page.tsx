@@ -1,109 +1,66 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useEffect, useMemo, useState } from 'react';
+import { StockMovement } from '@/app/types';
 
 export default function MovementsHistory() {
-  const [movements, setMovements] = useState<any[]>([]);
+  const [movements, setMovements] = useState<StockMovement[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [filter, setFilter] = useState('all');
 
   useEffect(() => {
-    fetch('/api/movements')
-      .then((res) => res.json())
-      .then((data) => {
-        setMovements(data);
-        setLoading(false);
-      });
+    fetch('/api/movements').then(async (response) => {
+      const data = await response.json();
+      if (!response.ok || !Array.isArray(data)) throw new Error(data?.error || 'No se pudo cargar el historial.');
+      setMovements(data);
+    }).catch((err) => setError(err.message)).finally(() => setLoading(false));
   }, []);
 
-  // Función para que la fecha se vea "humana" (Ej: 27/12/2025 14:30)
-  const formatDate = (dateString: string) => {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('es-AR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
-  };
+  const filtered = useMemo(() => filter === 'all' ? movements : movements.filter((movement) => movement.type === filter), [filter, movements]);
+  const formatDate = (value: string) => new Intl.DateTimeFormat('es-AR', {
+    day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
+  }).format(new Date(value));
 
-  // Función para decidir el color y el texto de la etiqueta
-  const renderTypeBadge = (type: string, notes: string | null) => {
-    // Si la nota indica que fue un ajuste de inventario (el botón azul)
-    if (notes && notes.includes('🔎')) {
-      return <span className="badge-info">🔎 Ajuste / Recuento</span>;
-    }
-
-    if (type === 'in') {
-      return <span className="badge-ok">🛒 Llegó Compra</span>;
-    } else {
-      return <span className="badge-alert">🍳 Se Usó</span>;
-    }
-  };
-
-  if (loading) return <p style={{ padding: '20px' }}>Abriendo el registro...</p>;
+  if (loading) return <div className="page-loading"><div className="skeleton skeleton-title" /><div className="skeleton skeleton-card" /></div>;
+  if (error) return <div className="alert-error" role="alert">{error}</div>;
 
   return (
-    <div>
-      <div style={{ marginBottom: '20px' }}>
-        <h2>📖 Libro Diario de Movimientos</h2>
-        <p style={{ color: 'var(--text-secondary)' }}>
-          Aca queda registrado todo lo que entra y sale de la cocina.
-        </p>
+    <>
+      <header className="page-heading">
+        <div><p className="eyebrow">Trazabilidad</p><h1>Historial de movimientos</h1><p>Registro de todos los ingresos, egresos y ajustes.</p></div>
+        <Link href="/movements/new" className="btn">＋ Nuevo movimiento</Link>
+      </header>
+
+      <div className="toolbar">
+        <div />
+        <select aria-label="Filtrar movimientos" value={filter} onChange={(event) => setFilter(event.target.value)}>
+          <option value="all">Todos los movimientos</option><option value="in">Ingresos</option><option value="out">Egresos</option>
+        </select>
       </div>
 
-      <div className="card">
-        <table>
-          <thead>
-            <tr>
-              <th>Cuándo pasó</th>
-              <th>Insumo</th>
-              <th>Acción</th>
-              <th>Cantidad</th>
-              <th>Notas / Detalles</th>
-            </tr>
-          </thead>
-          <tbody>
-            {movements.map((mov) => (
-              <tr key={mov.id}>
-                {/* FECHA */}
-                <td style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                  {formatDate(mov.created_at)}
-                </td>
-
-                {/* NOMBRE DEL PRODUCTO */}
-                <td style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
-                  {mov.product_name}
-                </td>
-
-                {/* TIPO (Etiqueta de color) */}
-                <td>
-                  {renderTypeBadge(mov.type, mov.notes)}
-                </td>
-
-                {/* CANTIDAD */}
-                <td style={{ fontFamily: 'monospace', fontSize: '1.1rem' }}>
-                  {mov.quantity} {mov.unit}
-                </td>
-
-                {/* NOTAS */}
-                <td style={{ fontStyle: 'italic', color: '#888', fontSize: '0.9rem' }}>
-                  {mov.notes || '-'}
-                </td>
-              </tr>
-            ))}
-
-            {movements.length === 0 && (
-              <tr>
-                <td colSpan={5} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>
-                  Todavía no hay anotaciones registradas
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </div>
+      <section className="card table-card">
+        <div className="table-scroll">
+          <table>
+            <thead><tr><th>Fecha y hora</th><th>Producto</th><th>Movimiento</th><th>Cantidad</th><th>Stock resultante</th><th>Detalle</th></tr></thead>
+            <tbody>
+              {filtered.map((movement) => {
+                const adjusted = movement.notes?.startsWith('Ajuste de inventario');
+                return <tr key={movement.id}>
+                  <td className="cell-date">{formatDate(movement.created_at)}</td>
+                  <td><strong>{movement.product_name}</strong></td>
+                  <td><span className={adjusted ? 'badge-info' : movement.type === 'in' ? 'badge-ok' : 'badge-alert'}>{adjusted ? 'Ajuste' : movement.type === 'in' ? 'Ingreso' : 'Egreso'}</span></td>
+                  <td className="stock-value">{movement.type === 'in' ? '+' : '−'}{movement.quantity} <small>{movement.unit}</small></td>
+                  <td>{movement.stock_after ?? '—'} {movement.stock_after != null ? movement.unit : ''}</td>
+                  <td>{movement.notes || <span className="cell-subtitle">Sin detalle</span>}</td>
+                </tr>;
+              })}
+              {!filtered.length && <tr><td colSpan={6} className="empty-state"><strong>No hay movimientos</strong><br />Los cambios de stock aparecerán acá.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </>
   );
 }

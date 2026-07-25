@@ -25,7 +25,7 @@ export async function middleware(request: NextRequest) {
         setAll(cookiesToSet) {
           // Aquí ocurre la magia: actualizamos las cookies tanto en el 'request'
           // (para que la app lo sepa ahora mismo) como en el 'response' (para el navegador)
-          cookiesToSet.forEach(({ name, value, options }) => {
+          cookiesToSet.forEach(({ name, value }) => {
             request.cookies.set(name, value);
           });
 

@@ -1,4 +1,30 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Norma Stock
+
+Control de stock para un pequeño emprendimiento de pastelería, construido con Next.js y Supabase.
+
+## Preparar Supabase
+
+Las tablas se alojan en Supabase. Para crear o actualizar el esquema sin borrar datos:
+
+1. Abrí el proyecto en Supabase.
+2. Entrá en **SQL Editor**.
+3. Copiá y ejecutá [`db/supabase-schema.sql`](db/supabase-schema.sql).
+
+El script es idempotente: utiliza `CREATE TABLE IF NOT EXISTS`, `ADD COLUMN IF NOT EXISTS`
+y `CREATE OR REPLACE FUNCTION`. Puede ejecutarse nuevamente y reutiliza las tablas existentes.
+
+No se ejecuta automáticamente al iniciar la aplicación porque alterar el esquema en runtime
+requiere privilegios administrativos y supone un riesgo innecesario. En producción conviene
+aplicar este archivo como una migración controlada.
+
+Variables requeridas en `.env`:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_URL=
+SUPABASE_SERVICE_KEY=
+```
 
 ## Getting Started
 

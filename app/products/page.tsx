@@ -1,188 +1,104 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { PRODUCT_CATEGORIES, Product } from '@/app/types';
 
 export default function ProductsList() {
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  
-  // 1. Nuevos estados para Filtro y Orden
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
+  const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState('all');
+  const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
 
-  const router = useRouter();
-
-  const fetchProducts = () => {
-    fetch('/api/products')
-      .then((res) => res.json())
-      .then((data) => {
-        setProducts(data);
-        setLoading(false);
-      });
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const handleDelete = async (id: number) => {
-    if (!id) return;
-    if (!confirm('¿Seguro que quieres borrar este insumo?')) return;
-
+  const loadProducts = async () => {
+    setLoading(true);
+    setError('');
     try {
-      const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
-      if (!res.ok) {
-        const errorData = await res.json();
-        alert(`Error: ${errorData.error}`);
-        return;
-      }
-      fetchProducts();
-      router.refresh();
-    } catch (error) {
-      console.error(error);
-      alert('Error de conexión');
+      const response = await fetch('/api/products');
+      const data = await response.json();
+      if (!response.ok || !Array.isArray(data)) throw new Error(data.error || 'Respuesta inválida.');
+      setProducts(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'No se pudieron cargar los productos.');
+    } finally {
+      setLoading(false);
     }
   };
 
-  // 2. Lógica de Ordenamiento (Click en columnas)
-  const handleSort = (key: string) => {
-    let direction: 'asc' | 'desc' = 'asc';
-    
-    // Si ya estamos ordenando por esta columna y es ascendente, lo cambiamos a descendente
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
-    }
-    setSortConfig({ key, direction });
+  useEffect(() => { loadProducts(); }, []);
+
+  const filtered = useMemo(() => products.filter((product) => {
+    const matchesText = product.name.toLowerCase().includes(search.toLowerCase()) ||
+      (product.sku ?? '').toLowerCase().includes(search.toLowerCase());
+    return matchesText && (category === 'all' || product.category === category);
+  }), [products, search, category]);
+
+  const remove = async () => {
+    if (!deleteTarget) return;
+    const response = await fetch(`/api/products/${deleteTarget.id}`, { method: 'DELETE' });
+    const data = await response.json();
+    if (!response.ok) return alert(data.error || 'No se pudo eliminar.');
+    setDeleteTarget(null);
+    loadProducts();
   };
 
-  // 3. Procesamiento de datos (Filtrar -> Ordenar)
-  const processedProducts = useMemo(() => {
-    // A. Copiamos los productos para no mutar el estado original
-    let result = [...products];
-
-    // B. Filtrar por nombre
-    if (searchTerm) {
-      result = result.filter(p => 
-        p.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // C. Ordenar
-    if (sortConfig) {
-      result.sort((a, b) => {
-        // Obtenemos los valores a comparar
-        let valueA = a[sortConfig.key];
-        let valueB = b[sortConfig.key];
-
-        // Si es texto, lo normalizamos a minúsculas para ordenar bien
-        if (typeof valueA === 'string') valueA = valueA.toLowerCase();
-        if (typeof valueB === 'string') valueB = valueB.toLowerCase();
-
-        if (valueA < valueB) {
-          return sortConfig.direction === 'asc' ? -1 : 1;
-        }
-        if (valueA > valueB) {
-          return sortConfig.direction === 'asc' ? 1 : -1;
-        }
-        return 0;
-      });
-    }
-
-    return result;
-  }, [products, searchTerm, sortConfig]);
-
-  // Helper para mostrar la flechita
-  const getSortIcon = (key: string) => {
-    if (!sortConfig || sortConfig.key !== key) return '↕️'; // Icono neutral
-    return sortConfig.direction === 'asc' ? '⬆️' : '⬇️';
-  };
-
-  if (loading) return <p>Cargando insumos...</p>;
+  if (loading) return <p>Cargando stock…</p>;
+  if (error) return <div className="card form-error">{error} <button className="btn-outline" onClick={loadProducts}>Reintentar</button></div>;
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
-        <h2>Mis Insumos</h2>
-        
-        {/* INPUT DE BUSQUEDA */}
-        <input 
-          type="text" 
-          placeholder="🔍 Buscar por nombre..." 
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ maxWidth: '300px', margin: 0 }} // Override del estilo global para que no ocupe todo
-        />
-
-        <Link href="/products/new" className="btn">
-          + Nuevo Insumo
-        </Link>
+      <div className="page-heading">
+        <div><p className="eyebrow">Inventario</p><h1>Productos e insumos</h1><p>{products.length} productos activos</p></div>
+        <Link href="/products/new" className="btn">+ Agregar producto</Link>
       </div>
-
-      <div className="card">
-        <table>
-          <thead>
-            <tr>
-              {/* COLUMNAS ORDENABLES */}
-              <th 
-                onClick={() => handleSort('name')} 
-                style={{ cursor: 'pointer', userSelect: 'none' }}
-                title="Click para ordenar"
-              >
-                Nombre {getSortIcon('name')}
-              </th>
-              
-              <th 
-                onClick={() => handleSort('unit')} 
-                style={{ cursor: 'pointer', userSelect: 'none' }}
-              >
-                Unidad {getSortIcon('unit')}
-              </th>
-              
-              <th 
-                onClick={() => handleSort('current_stock')} 
-                style={{ cursor: 'pointer', userSelect: 'none' }}
-              >
-                Stock {getSortIcon('current_stock')}
-              </th>
-              
-              <th>Mínimo</th>
-              <th style={{ textAlign: 'right' }}>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {processedProducts.map((product) => (
-              <tr key={product.id}>
-                <td style={{ fontWeight: 'bold' }}>{product.name}</td>
-                <td>{product.unit}</td>
-                <td>
-                  <span className={product.current_stock <= product.min_threshold ? 'alert-row' : ''}>
-                    {product.current_stock}
-                  </span>
-                </td>
-                <td>{product.min_threshold}</td>
-                <td style={{ textAlign: 'right' }}>
-                  <button 
-                    onClick={() => handleDelete(product.id)}
-                    className="btn-outline"
-                    style={{ border: '1px solid var(--danger)', color: 'var(--danger)', fontSize: '0.8rem', padding: '5px 10px' }}
-                  >
-                    Borrar
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {processedProducts.length === 0 && (
-              <tr>
-                <td colSpan={5} style={{ textAlign: 'center', padding: '20px', color: 'var(--text-secondary)' }}>
-                  {searchTerm ? 'No se encontraron productos con ese nombre.' : 'No hay insumos registrados aún.'}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+      <div className="toolbar">
+        <input aria-label="Buscar productos" value={search} onChange={(e) => setSearch(e.target.value)}
+          placeholder="Buscar por nombre o código…" />
+        <select aria-label="Filtrar por tipo" value={category} onChange={(e) => setCategory(e.target.value)}>
+          <option value="all">Todos los tipos</option>
+          {Object.entries(PRODUCT_CATEGORIES).map(([value, label]) =>
+            <option key={value} value={value}>{label}</option>)}
+        </select>
       </div>
+      <div className="card table-card">
+        <div className="table-scroll">
+          <table>
+            <thead><tr><th>Producto</th><th>Tipo</th><th>Stock actual</th><th>Mínimo</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <tbody>
+              {filtered.map((product) => {
+                const low = Number(product.current_stock) <= Number(product.min_threshold);
+                return (
+                  <tr key={product.id}>
+                    <td><strong>{product.name}</strong>{product.sku && <small className="cell-subtitle">{product.sku}</small>}</td>
+                    <td>{PRODUCT_CATEGORIES[product.category] ?? product.category}</td>
+                    <td className="stock-value">{product.current_stock} <small>{product.unit}</small></td>
+                    <td>{product.min_threshold} {product.unit}</td>
+                    <td><span className={low ? 'badge-alert' : 'badge-ok'}>{low ? 'Stock bajo' : 'Disponible'}</span></td>
+                    <td><div className="row-actions">
+                      <Link className="btn-small primary" href={`/movements/new?product=${product.id}`}>Movimiento</Link>
+                      <Link className="btn-small" href={`/products/${product.id}/edit`}>Editar</Link>
+                      <button className="btn-small danger" onClick={() => setDeleteTarget(product)}>Eliminar</button>
+                    </div></td>
+                  </tr>
+                );
+              })}
+              {!filtered.length && <tr><td colSpan={6} className="empty-state">No hay productos que coincidan.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {deleteTarget && <div className="modal-backdrop" role="presentation" onMouseDown={(event) => {
+        if (event.currentTarget === event.target) setDeleteTarget(null);
+      }}>
+        <div className="modal" role="dialog" aria-modal="true" aria-labelledby="delete-title">
+          <p className="eyebrow">Confirmación</p>
+          <h2 id="delete-title">¿Dar de baja este producto?</h2>
+          <p><strong>{deleteTarget.name}</strong> dejará de aparecer en el inventario. Su historial de movimientos se conservará.</p>
+          <div className="modal-actions"><button className="btn-outline" autoFocus onClick={() => setDeleteTarget(null)}>Cancelar</button><button className="btn-danger" onClick={remove}>Dar de baja</button></div>
+        </div>
+      </div>}
     </div>
   );
 }
