@@ -42,7 +42,7 @@ export default function MovementsHistory() {
 
       <section className="card table-card">
         <div className="table-scroll">
-          <table>
+          <table className="movements-table">
             <thead><tr><th>Fecha y hora</th><th>Producto</th><th>Movimiento</th><th>Cantidad</th><th>Stock resultante</th><th>Detalle</th></tr></thead>
             <tbody>
               {filtered.map((movement) => {

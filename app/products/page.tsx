@@ -64,7 +64,7 @@ export default function ProductsList() {
       </div>
       <div className="card table-card">
         <div className="table-scroll">
-          <table>
+          <table className="product-table">
             <thead><tr><th>Producto</th><th>Tipo</th><th>Stock actual</th><th>Mínimo</th><th>Estado</th><th>Acciones</th></tr></thead>
             <tbody>
               {filtered.map((product) => {

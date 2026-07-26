@@ -105,6 +105,15 @@ html[data-theme="wine"] .sidebar {
   color-scheme: dark;
 }
 
+html[data-theme="wine"] .theme-popover {
+  --text: #3e0d17;
+  --text-secondary: #633640;
+  --text-muted: #7b5660;
+  color: var(--text);
+  background: #fff9ef;
+  color-scheme: light;
+}
+
 * { box-sizing: border-box; }
 html { background: var(--bg); }
 body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-inter), system-ui, sans-serif; line-height: 1.5; -webkit-font-smoothing: antialiased; }
@@ -302,20 +311,69 @@ td strong { color: var(--text); }
 
 @media (max-width: 700px) {
   :root { --sidebar-width: 0px; }
-  .sidebar { inset: auto 0 0; width: 100%; height: 72px; flex-direction: row; padding: 8px 12px max(8px, env(safe-area-inset-bottom)); border: 0; border-top: 1px solid var(--border); }
+  .sidebar { inset: auto 0 0; width: 100%; height: calc(64px + env(safe-area-inset-bottom)); flex-direction: row; padding: 6px 8px max(6px, env(safe-area-inset-bottom)); border: 0; border-top: 1px solid var(--border); }
   .brand, .nav-caption, .logout-button { display: none; }
-  .main-nav { flex-direction: row; justify-content: space-around; gap: 4px; }
-  .nav-link { flex: 1; min-height: 52px; flex-direction: column; gap: 1px; font-size: .67rem; }
-  .nav-label { position: static; width: auto; height: auto; overflow: visible; clip: auto; }
-  .nav-icon { height: 24px; }
-  .sidebar-footer { width: 52px; flex: 0 0 52px; }
-  .theme-control { padding: 0; border-top: 0; }
-  .theme-compact > summary { min-height: 52px; }
-  .theme-popover { left: auto; right: 12px; bottom: 80px; }
-  .app-content { margin-left: 0; padding-bottom: 72px; }
-  .page-container { padding: 24px 16px 36px; }
+  .main-nav { flex-direction: row; justify-content: space-around; gap: 5px; }
+  .nav-link { flex: 1; min-width: 0; min-height: 50px; padding: 0; }
+  .nav-link .nav-label { display: none; }
+  .nav-icon { width: 100%; height: 100%; font-size: 1.35rem; }
+  .sidebar-footer { position: static; width: 0; flex: 0 0 0; }
+  .sidebar .theme-control { position: fixed; top: max(10px, env(safe-area-inset-top)); right: 10px; z-index: 70; width: 46px; padding: 0; border: 0; }
+  .theme-compact > summary { width: 46px; min-height: 46px; border-radius: 50%; background: var(--surface-raised); box-shadow: var(--shadow-lg); }
+  .theme-popover { top: calc(max(10px, env(safe-area-inset-top)) + 54px); right: 10px; bottom: auto; left: auto; width: min(250px, calc(100vw - 20px)); }
+  .app-content { margin-left: 0; padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
+  .page-container { padding: calc(68px + env(safe-area-inset-top)) 14px 32px; }
   .page-heading { align-items: stretch; flex-direction: column; }
+  .page-heading > .btn { width: 100%; }
   .metric-grid, .toolbar { grid-template-columns: 1fr; }
   .form-actions { flex-direction: column-reverse; }
   .form-actions > * { width: 100%; }
+
+  .product-table thead, .movements-table thead { display: none; }
+  .product-table, .product-table tbody, .product-table tr,
+  .movements-table, .movements-table tbody, .movements-table tr { display: block; width: 100%; }
+  .product-table tbody, .movements-table tbody { padding: 8px; }
+  .product-table tr, .movements-table tr { margin-bottom: 8px; padding: 13px; background: var(--surface-raised); border: 1px solid var(--border); border-radius: 12px; }
+  .product-table tr:last-child, .movements-table tr:last-child { margin-bottom: 0; }
+  .product-table td, .movements-table td { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-width: 0; padding: 5px 0; border: 0; text-align: right; }
+  .product-table td:first-child, .movements-table td:nth-child(2) { display: block; padding: 0 0 9px; text-align: left; }
+  .product-table td:nth-child(2), .product-table td:nth-child(4) { display: none; }
+  .product-table td:nth-child(3)::before { content: "Stock"; }
+  .product-table td:nth-child(5)::before { content: "Estado"; }
+  .product-table td:nth-child(6) { display: block; padding-top: 10px; }
+  .product-table td:nth-child(3)::before, .product-table td:nth-child(5)::before,
+  .movements-table td::before { color: var(--text-muted); font-size: .72rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+  .product-table .row-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .product-table .btn-small { min-height: 44px; justify-content: center; }
+  .product-table .empty-state, .movements-table .empty-state { display: block; padding: 28px 12px; text-align: center; }
+
+  .movements-table td:first-child { padding-top: 0; color: var(--text-muted); font-size: .75rem; }
+  .movements-table td:first-child::before, .movements-table td:nth-child(2)::before { content: none; }
+  .movements-table td:nth-child(3)::before { content: "Tipo"; }
+  .movements-table td:nth-child(4)::before { content: "Cantidad"; }
+  .movements-table td:nth-child(5)::before { content: "Stock final"; }
+  .movements-table td:nth-child(6)::before { content: "Detalle"; }
+}
+
+@media (max-width: 380px) {
+  .page-container { padding-inline: 10px; }
+  .card, .metric-card { padding: 16px; border-radius: 13px; }
+  .table-card { padding: 0; }
+  .page-heading { gap: 14px; margin-bottom: 20px; }
+  .page-heading h1, .page-heading h2 { padding-right: 48px; font-size: 1.45rem; line-height: 1.15; }
+  .page-heading p:not(.eyebrow) { font-size: .86rem; }
+  .metric-grid { gap: 10px; }
+  .metric-card { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 10px; }
+  .metric-label { margin: 0; }
+  .metric-value { grid-column: 2; grid-row: 1 / span 2; font-size: 1.5rem; }
+  .metric-detail { margin: 0; }
+  .section-heading { gap: 8px; }
+  .alert-row-head { align-items: flex-start; }
+  .alert-row-head .badge-alert, .alert-row-head .badge-warning { max-width: 46%; white-space: normal; text-align: right; }
+  .segmented-control { gap: 3px; padding: 4px; }
+  .segment { min-height: 44px; font-size: .82rem; }
+  .modal-backdrop { padding: 10px; }
+  .modal { padding: 20px 16px; border-radius: 14px; }
+  .modal-actions { flex-direction: column-reverse; }
+  .modal-actions > * { width: 100%; }
 }
