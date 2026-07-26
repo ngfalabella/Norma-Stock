@@ -15,7 +15,11 @@ const navItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.startsWith(href);
+  const isActive = (href: string) => {
+    if (href === '/') return pathname === '/';
+    if (href === '/movements') return pathname === '/movements';
+    return pathname.startsWith(href);
+  };
 
   const logout = async () => {
     const supabase = createBrowserClient(

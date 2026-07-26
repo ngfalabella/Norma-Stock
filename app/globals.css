@@ -137,10 +137,12 @@ h1, h2, h3, h4 { letter-spacing: -.02em; }
 .nav-caption { margin: 5px 12px 7px; color: #686b77; font-size: .7rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
 .nav-caption-actions { margin-top: 24px; }
 .nav-link, .logout-button { min-height: 48px; display: flex; align-items: center; gap: 12px; padding: 0 12px; color: var(--text-secondary); border: 1px solid transparent; border-radius: var(--radius-md); background: transparent; font-weight: 550; text-decoration: none; cursor: pointer; transition: color .15s, background .15s, border-color .15s; }
-.nav-link:hover { color: var(--text); background: rgba(255,255,255,.04); }
+@media (hover:hover) and (pointer:fine) and (min-width: 1101px) {
+  .nav-link:hover { color: var(--text); background: rgba(255,255,255,.04); }
+}
 .nav-link.active { color: var(--text); background: var(--primary-soft); border-color: var(--primary); }
 .nav-icon { width: 26px; height: 26px; flex: 0 0 26px; display: grid; place-items: center; font-family: "Segoe UI Emoji", "Apple Color Emoji", sans-serif; font-size: 1.22rem; line-height: 1; }
-.nav-action { border-color: var(--border); background: rgba(255,255,255,.025); }
+.nav-action { border-color: transparent; background: transparent; }
 .logout-button { width: 100%; color: var(--text-muted); }
 .logout-button:hover { color: var(--danger); background: var(--danger-soft); }
 .sidebar-footer { display: grid; gap: 8px; }
